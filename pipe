@@ -5,9 +5,7 @@ from collections import OrderedDict
 
 LOGFILE     = sys.stderr
 IN_STREAM   = sys.stdin
-
-# in a future revision, replace all calls to 'sys.stdout' below with OUT_STREAM
-#OUT_STREAM  = sys.stdout
+OUT_STREAM  = sys.stdout
 
 pipepath="./pipefile"
 
@@ -42,23 +40,31 @@ try:
         pipepath=args.read
         rp=open(pipepath,'r')
         response=rp.read()
+        rp.close()
+
+        #now parse the named pipe contents, assuming there's a JSON packet on each line
+        #note that there's some funkiness in how named pipes work; had to account for an extra blank line at the end of the pipe
+
         splitResponse=response.split("\n")
-        sys.stdout.write('{')
+        OUT_STREAM.write('{')
         index=0
         iMax=len(splitResponse)
         i=0
-        while (i<(iMax-1)):
+        while (i<(iMax-1)): # the (iMax-1) here is because of the final blank line in the named pipe
             #print index
             index=index+1
-            sys.stdout.write(splitResponse[i])
+            OUT_STREAM.write(splitResponse[i])
             if (i<(iMax-2)):
-                sys.stdout.write(",")
+                OUT_STREAM.write(",")
             i=i+1
-        sys.stdout.write("}")
-        rp.close()
-
+        OUT_STREAM.write("}")
+        OUT_STREAM.close()
+        
 except Exception, exc:
     LOGFILE.write("ERROR: %s" % exc)
 finally:
+    
     LOGFILE.close()
     IN_STREAM.close()
+
+    # should we perform a sys.stdout.close() here too?
