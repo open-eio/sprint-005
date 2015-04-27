@@ -37,12 +37,10 @@ Note that 'pipefile' is a 'named pipe' that we've created for our process.  In o
 
 Now, let's gather everything we've written to the named pipe, and put it into one combined JSON packet:
 
-> ./pipe -r > combined_packet.json
+> ./pipe -r pipefile> combined_packet.json
 
 When we examine the contents of this packet, we see:
 
 *combined_packet.json*: {{"hello":3,"temp":2},{"cond":2, "up":2},{"soup":6, "bubbles":2}}
 
-## Next steps
-
-We'll need to figure out whether, if something goes wrong in the 'read' process, we might want to delete the named pipe ... we don't want to be receiving data written to it previously ... I don't know how long it's stored in memory ... etc.
+## Next ste
