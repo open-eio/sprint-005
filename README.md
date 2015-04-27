@@ -14,12 +14,30 @@ Then, when the named pipe is read, the process 'unblocks'.
 
 ## Example
 
-Use the files provided in the repo to test the code:
+In the following example, three JSON packets (provided as example files in the repo) are processed by the 'pipe' cli, writing them one by one into a named pipe named 'pipefile'
 
-> cat packet1.json | ./pipe -w &
+The files being used are:
 
-> cat packet2.json | ./pipe -w &
+*packet1.json*:  {"hello":3,"temp":2}
+*packet2.json*:  {"soup":6, "bubbles":2}
+*packet3.json*:  {"cond":2, "up":2}
 
-> cat packet3.json | ./pipe -w &
+(Below, we 'cat' the example files and pipe them into the 'pipe' CLI; but this could just as well have been any other 'stdout' process.)
 
-> ./pipe > combined_packet.json
+> cat packet1.json | ./pipe -w pipefile&
+
+> cat packet2.json | ./pipe -w pipefile&
+
+> cat packet3.json | ./pipe -w pipefile&
+
+Note that 'pipefile' is a 'named pipe' that we've created for our process.  In order to avoid excessive reads/writes to the system, it may be optimal to use the same pipefile for all processes.
+
+(Although: we'll need to figure out whether, if something goes wrong in the 'read' process, we might want to delete the named pipe ... we don't want to be receiving data written to it previously ... I don't know how long it's stored in memory ... etc.)
+
+Now, let's gather everything we've written to the named pipe, and put it into one combined JSON packet:
+
+> ./pipe -r > combined_packet.json
+
+When we examine the contents of this packet, we see:
+
+*combined_packet.json*: {{"hello":3,"temp":2},{"cond":2, "up":2},{"soup":6, "bubbles":2}}

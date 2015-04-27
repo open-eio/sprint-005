@@ -17,8 +17,8 @@ pipepath="./pipefile"
 parser = argparse.ArgumentParser()
 
 # need to make 'write' and 'read' mutually exclusive options ...
-parser.add_argument("-w","--write", action="store_true", help="write to pipe file")
-parser.add_argument("-r","--read", action="store_true", help="read from pipe file")
+parser.add_argument("-w","--write", help="write to pipe file")
+parser.add_argument("-r","--read", help="read from pipe file")
 
 # verbose
 parser.add_argument("-v", "--verbose", action="store_true", help="increase output verbosity")
@@ -29,6 +29,7 @@ args = parser.parse_args()
 try:
     if(args.write):
         try: #should check to see if there's already a pipefile
+            pipepath=args.write
             os.mkfifo(pipepath)
         except OSError:
             pass
@@ -39,6 +40,7 @@ try:
         wp.close()
 
     if(args.read):
+        pipepath=args.read
         rp=open(pipepath,'r')
         response=rp.read()
         splitResponse=response.split("\n")
